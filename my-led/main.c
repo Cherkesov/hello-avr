@@ -4,7 +4,7 @@
 
 int main(void)
 {
-	int period = 5;
+    int period = 5;
 
     period = period * 1000;
 
