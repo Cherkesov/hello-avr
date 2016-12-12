@@ -7,8 +7,8 @@ int main(void)
     DDRD = 0xff;
     while (1) {
         PORTD = 0xff;
-        _delay_ms(200);
+        _delay_ms(10);
         PORTD = 0x00;
-        _delay_ms(5000);
+        _delay_ms(2500);
     }
 }

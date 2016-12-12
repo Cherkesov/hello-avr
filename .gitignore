@@ -1,3 +1,4 @@
+.idea
 .dep
 obj
 *.eep
@@ -6,3 +7,5 @@ obj
 *.lss
 *.map
 *.sym
+
+run.sh

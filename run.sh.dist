@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+cd ./lcd-1602a/
+#cd ./my-led/
+make all
+avrdude -p atmega8 -P usb -c usbasp -U flash:w:main.hex
+
+#avrdude -p atmega162 -P usb -c usbasp -U flash:w:main.hex
+#avrdude -p atmega162 -P usb -c usbasp -U flash:w:main.hex -F
+#avrdude -p atmega162 -P usb -c usbasp -U flash:w:main.hex -D
