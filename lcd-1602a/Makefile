@@ -4,10 +4,10 @@
 # ОСНОВНЫЕ ИНСТРУКЦИИ
 
 # Тип используемого микроконтроллера
-MY_MCU = atmega8
+MY_MCU = atmega162
 
 # Частота кварцевого резонатора (Hz)
-MY_F_CPU = 8000000
+MY_F_CPU = 16000000
 
 # Название файла проекта (без расширения)
 MY_TARGET = main
@@ -108,7 +108,7 @@ SRC =$(TARGET).c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
-CPPSRC = 
+CPPSRC =
 
 
 # List Assembler source files here.
