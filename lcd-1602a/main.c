@@ -8,28 +8,25 @@
 #include <string.h>
 
 
-
-
 #include <inttypes.h>
 #include <avr/pgmspace.h>
-//#define LCD_4bit
 
 
-#define LCD_RS	0 	//define MCU pin connected to LCD RS
-#define LCD_RW	2 	//define MCU pin connected to LCD R/W
-#define LCD_E	1	//define MCU pin connected to LCD E
-#define LCD_D0	0	//define MCU pin connected to LCD D0
-#define LCD_D1	1	//define MCU pin connected to LCD D1
-#define LCD_D2	2	//define MCU pin connected to LCD D1
-#define LCD_D3	3	//define MCU pin connected to LCD D2
-#define LCD_D4	4	//define MCU pin connected to LCD D3
-#define LCD_D5	5	//define MCU pin connected to LCD D4
-#define LCD_D6	6	//define MCU pin connected to LCD D5
-#define LCD_D7	7	//define MCU pin connected to LCD D6
-#define LDP PORTD	//define MCU port connected to LCD data pins
-#define LCP PORTB	//define MCU port connected to LCD control pins
-#define LDDR DDRD	//define MCU direction register for port connected to LCD data pins
-#define LCDR DDRB	//define MCU direction register for port connected to LCD control pins
+#define LCD_RS    0    //define MCU pin connected to LCD RS
+#define LCD_RW    2    //define MCU pin connected to LCD R/W
+#define LCD_E    1    //define MCU pin connected to LCD E
+#define LCD_D0    0    //define MCU pin connected to LCD D0
+#define LCD_D1    1    //define MCU pin connected to LCD D1
+#define LCD_D2    2    //define MCU pin connected to LCD D1
+#define LCD_D3    3    //define MCU pin connected to LCD D2
+#define LCD_D4    4    //define MCU pin connected to LCD D3
+#define LCD_D5    5    //define MCU pin connected to LCD D4
+#define LCD_D6    6    //define MCU pin connected to LCD D5
+#define LCD_D7    7    //define MCU pin connected to LCD D6
+#define LDP PORTD    //define MCU port connected to LCD data pins
+#define LCP PORTB    //define MCU port connected to LCD control pins
+#define LDDR DDRD    //define MCU direction register for port connected to LCD data pins
+#define LCDR DDRB    //define MCU direction register for port connected to LCD control pins
 
 
 #define LCD_CLR             0    //DB0: clear display
@@ -62,6 +59,8 @@
 // progress bar defines
 #define PROGRESSPIXELS_PER_CHAR    6
 
+const uint8_t* LcdCustomChar = 0;
+
 
 void LCDsendChar(uint8_t);        //forms data ready to send to 74HC164
 void LCDsendCommand(uint8_t);    //forms data ready to send to 74HC164
@@ -89,37 +88,32 @@ void LCDcursorRight(uint8_t);    //shif cursor right by n
 void LCDprogressBar(uint8_t progress, uint8_t maxprogress, uint8_t length);
 
 
-
 #define RS PC0 // RS подключаем к PC0 микроконтроллера
 #define EN PC2 // EN подключаем к PC2 микроконтроллера
 
 // Основная программа
 int main(void) {
-
-//    LCDinit();
-//    LCDclr();
-
-//    std::string myString("Hello");
-//    uint8_t* data = reinterpret_cast<uint8_t*>(myString.c_str());
-
-//    std::vector<uint8_t> myVector(myString.begin(), myString.end());
-//    uint8_t *data = &myVector[0];
-
-//    data[0] = 'H';
-//    data[0] = 'e';
-//    data[0] = 'l';
-//    data[0] = 'l';
-//    data[0] = 'o';
-
-//    LCDstring(data, 5);
-
-    DDRC = 0xFF; PORTD = 0x00;
+//    DDRC = 0xFF;
+//    PORTD = 0x00;
     LCDinit();
-    LCDGotoXY(0,0);
-    printf("skkap");
 
     while (1) {
-        //
+//        LCD_CLR();
+//        LCDsendCommand(LCD_CLR);
+//        LCDGotoXY(0, 0);
+
+        const uint8_t letterA = 'a';
+
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+        LCDsendChar(letterA);
+
+        _delay_ms(500);
     }
 }
 
@@ -128,20 +122,20 @@ int main(void) {
 
 
 
-const uint8_t LcdCustomChar[] PROGMEM=//define 8 custom LCD chars
-        {
-                0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, // 0. 0/5 full progress block
-                0x00, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x1F, 0x00, // 1. 1/5 full progress block
-                0x00, 0x1F, 0x18, 0x18, 0x18, 0x18, 0x1F, 0x00, // 2. 2/5 full progress block
-                0x00, 0x1F, 0x1C, 0x1C, 0x1C, 0x1C, 0x1F, 0x00, // 3. 3/5 full progress block
-                0x00, 0x1F, 0x1E, 0x1E, 0x1E, 0x1E, 0x1F, 0x00, // 4. 4/5 full progress block
-                0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00, // 5. 5/5 full progress block
-                0x03, 0x07, 0x0F, 0x1F, 0x0F, 0x07, 0x03, 0x00, // 6. rewind arrow
-                0x18, 0x1C, 0x1E, 0x1F, 0x1E, 0x1C, 0x18, 0x00  // 7. fast-forward arrow
-        };
+//const uint8_t LcdCustomChar[] PROGMEM=//define 8 custom LCD chars
+//        {
+//                0x00, 0x1F, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x00, // 0. 0/5 full progress block
+//                0x00, 0x1F, 0x10, 0x10, 0x10, 0x10, 0x1F, 0x00, // 1. 1/5 full progress block
+//                0x00, 0x1F, 0x18, 0x18, 0x18, 0x18, 0x1F, 0x00, // 2. 2/5 full progress block
+//                0x00, 0x1F, 0x1C, 0x1C, 0x1C, 0x1C, 0x1F, 0x00, // 3. 3/5 full progress block
+//                0x00, 0x1F, 0x1E, 0x1E, 0x1E, 0x1E, 0x1F, 0x00, // 4. 4/5 full progress block
+//                0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x00, // 5. 5/5 full progress block
+//                0x03, 0x07, 0x0F, 0x1F, 0x0F, 0x07, 0x03, 0x00, // 6. rewind arrow
+//                0x18, 0x1C, 0x1E, 0x1F, 0x1E, 0x1C, 0x18, 0x00  // 7. fast-forward arrow
+//        };
 
 
-void LCDsendChar(uint8_t ch)		//Sends Char to LCD
+void LCDsendChar(uint8_t ch)        //Sends Char to LCD
 {
 
 #ifdef LCD_4bit
@@ -162,16 +156,17 @@ void LCDsendChar(uint8_t ch)		//Sends Char to LCD
     _delay_us(100);
 #else
     //8 bit part
-	LDP=ch;
-	LCP|=1<<LCD_RS;
-	LCP|=1<<LCD_E;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	LCP&=~(1<<LCD_RS);
-	_delay_us(100);
+    LDP = ch;
+    LCP |= 1 << LCD_RS;
+    LCP |= 1 << LCD_E;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    LCP &= ~(1 << LCD_RS);
+    _delay_us(100);
 #endif
 }
-void LCDsendCommand(uint8_t cmd)	//Sends Command to LCD
+
+void LCDsendCommand(uint8_t cmd)    //Sends Command to LCD
 {
 #ifdef LCD_4bit
     //4 bit part
@@ -187,13 +182,14 @@ void LCDsendCommand(uint8_t cmd)	//Sends Command to LCD
     _delay_us(100);
 #else
     //8 bit part
-	LDP=cmd;
-	LCP|=1<<LCD_E;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_us(100);
+    LDP = cmd;
+    LCP |= 1 << LCD_E;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_us(100);
 #endif
 }
+
 void LCDinit(void)//Initializes LCD
 {
 #ifdef LCD_4bit
@@ -236,66 +232,68 @@ void LCDinit(void)//Initializes LCD
 
 #else
     //8 bit part
-	_delay_us(100);
-	LDP=0x00;
-	LCP=0x00;
-	LDDR|=1<<LCD_D7|1<<LCD_D6|1<<LCD_D5|1<<LCD_D4|1<<LCD_D3
-			|1<<LCD_D2|1<<LCD_D1|1<<LCD_D0;
-	LCDR|=1<<LCD_E|1<<LCD_RW|1<<LCD_RS;
-   //---------one------
-	LDP=0<<LCD_D7|0<<LCD_D6|1<<LCD_D5|1<<LCD_D4|0<<LCD_D3
-			|0<<LCD_D2|0<<LCD_D1|0<<LCD_D0; //8 it mode
-	LCP|=1<<LCD_E|0<<LCD_RW|0<<LCD_RS;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_us(100);
-	//-----------two-----------
-	LDP=0<<LCD_D7|0<<LCD_D6|1<<LCD_D5|1<<LCD_D4|0<<LCD_D3
-			|0<<LCD_D2|0<<LCD_D1|0<<LCD_D0; //8 it mode
-	LCP|=1<<LCD_E|0<<LCD_RW|0<<LCD_RS;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_us(100);
-	//-------three-------------
-	LDP=0<<LCD_D7|0<<LCD_D6|1<<LCD_D5|1<<LCD_D4|0<<LCD_D3
-			|0<<LCD_D2|0<<LCD_D1|0<<LCD_D0; //8 it mode
-	LCP|=1<<LCD_E|0<<LCD_RW|0<<LCD_RS;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_us(100);
-	//--------8 bit dual line----------
-	LDP=0<<LCD_D7|0<<LCD_D6|1<<LCD_D5|1<<LCD_D4|1<<LCD_D3
-			|0<<LCD_D2|0<<LCD_D1|0<<LCD_D0; //8 it mode
-	LCP|=1<<LCD_E|0<<LCD_RW|0<<LCD_RS;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_us(100);
-   //-----increment address, invisible cursor shift------
-	LDP=0<<LCD_D7|0<<LCD_D6|0<<LCD_D5|0<<LCD_D4|1<<LCD_D3
-			|1<<LCD_D2|0<<LCD_D1|0<<LCD_D0; //8 it mode
-	LCP|=1<<LCD_E|0<<LCD_RW|0<<LCD_RS;
-	_delay_us(100);
-	LCP&=~(1<<LCD_E);
-	_delay_ms(5);
-		//init custom chars
-	uint8_t ch=0, chn=0;
-	while(ch<64)
-	{
-		LCDdefinechar((LcdCustomChar+ch),chn++);
-		ch=ch+8;
-	}
+    _delay_us(100);
+    LDP = 0x00;
+    LCP = 0x00;
+    LDDR |= 1 << LCD_D7 | 1 << LCD_D6 | 1 << LCD_D5 | 1 << LCD_D4 | 1 << LCD_D3
+            | 1 << LCD_D2 | 1 << LCD_D1 | 1 << LCD_D0;
+    LCDR |= 1 << LCD_E | 1 << LCD_RW | 1 << LCD_RS;
+    //---------one------
+    LDP = 0 << LCD_D7 | 0 << LCD_D6 | 1 << LCD_D5 | 1 << LCD_D4 | 0 << LCD_D3
+          | 0 << LCD_D2 | 0 << LCD_D1 | 0 << LCD_D0; //8 it mode
+    LCP |= 1 << LCD_E | 0 << LCD_RW | 0 << LCD_RS;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_us(100);
+    //-----------two-----------
+    LDP = 0 << LCD_D7 | 0 << LCD_D6 | 1 << LCD_D5 | 1 << LCD_D4 | 0 << LCD_D3
+          | 0 << LCD_D2 | 0 << LCD_D1 | 0 << LCD_D0; //8 it mode
+    LCP |= 1 << LCD_E | 0 << LCD_RW | 0 << LCD_RS;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_us(100);
+    //-------three-------------
+    LDP = 0 << LCD_D7 | 0 << LCD_D6 | 1 << LCD_D5 | 1 << LCD_D4 | 0 << LCD_D3
+          | 0 << LCD_D2 | 0 << LCD_D1 | 0 << LCD_D0; //8 it mode
+    LCP |= 1 << LCD_E | 0 << LCD_RW | 0 << LCD_RS;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_us(100);
+    //--------8 bit dual line----------
+    LDP = 0 << LCD_D7 | 0 << LCD_D6 | 1 << LCD_D5 | 1 << LCD_D4 | 1 << LCD_D3
+          | 0 << LCD_D2 | 0 << LCD_D1 | 0 << LCD_D0; //8 it mode
+    LCP |= 1 << LCD_E | 0 << LCD_RW | 0 << LCD_RS;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_us(100);
+    //-----increment address, invisible cursor shift------
+    LDP = 0 << LCD_D7 | 0 << LCD_D6 | 0 << LCD_D5 | 0 << LCD_D4 | 1 << LCD_D3
+          | 1 << LCD_D2 | 0 << LCD_D1 | 0 << LCD_D0; //8 it mode
+    LCP |= 1 << LCD_E | 0 << LCD_RW | 0 << LCD_RS;
+    _delay_us(100);
+    LCP &= ~(1 << LCD_E);
+    _delay_ms(5);
+    //init custom chars
+    uint8_t ch = 0, chn = 0;
+    while (ch < 64) {
+        LCDdefinechar((LcdCustomChar + ch), chn++);
+        ch = ch + 8;
+    }
 
 #endif
 }
-void LCDclr(void)				//Clears LCD
+
+void LCDclr(void)                //Clears LCD
 {
-    LCDsendCommand(1<<LCD_CLR);
+    LCDsendCommand(1 << LCD_CLR);
 }
-void LCDhome(void)			//LCD cursor home
+
+void LCDhome(void)            //LCD cursor home
 {
-    LCDsendCommand(1<<LCD_HOME);
+    LCDsendCommand(1 << LCD_HOME);
 }
-void LCDstring(uint8_t* data, uint8_t nBytes)	//Outputs string to LCD
+
+void LCDstring(uint8_t *data, uint8_t nBytes)    //Outputs string to LCD
 {
     register uint8_t i;
 
@@ -303,37 +301,44 @@ void LCDstring(uint8_t* data, uint8_t nBytes)	//Outputs string to LCD
     if (!data) return;
 
     // print data
-    for(i=0; i<nBytes; i++)
-    {
+    for (i = 0; i < nBytes; i++) {
         LCDsendChar(data[i]);
     }
 }
-void LCDGotoXY(uint8_t x, uint8_t y)	//Cursor to X Y position
+
+void LCDGotoXY(uint8_t x, uint8_t y)    //Cursor to X Y position
 {
     register uint8_t DDRAMAddr;
     // remap lines into proper order
-    switch(y)
-    {
-        case 0: DDRAMAddr = LCD_LINE0_DDRAMADDR+x; break;
-        case 1: DDRAMAddr = LCD_LINE1_DDRAMADDR+x; break;
-        case 2: DDRAMAddr = LCD_LINE2_DDRAMADDR+x; break;
-        case 3: DDRAMAddr = LCD_LINE3_DDRAMADDR+x; break;
-        default: DDRAMAddr = LCD_LINE0_DDRAMADDR+x;
+    switch (y) {
+        case 0:
+            DDRAMAddr = LCD_LINE0_DDRAMADDR + x;
+            break;
+        case 1:
+            DDRAMAddr = LCD_LINE1_DDRAMADDR + x;
+            break;
+        case 2:
+            DDRAMAddr = LCD_LINE2_DDRAMADDR + x;
+            break;
+        case 3:
+            DDRAMAddr = LCD_LINE3_DDRAMADDR + x;
+            break;
+        default:
+            DDRAMAddr = LCD_LINE0_DDRAMADDR + x;
     }
     // set data address
-    LCDsendCommand(1<<LCD_DDRAM | DDRAMAddr);
+    LCDsendCommand(1 << LCD_DDRAM | DDRAMAddr);
 
 }
+
 //Copies string from flash memory to LCD at x y position
 //const uint8_t welcomeln1[] PROGMEM="AVR LCD DEMO\0";
 //CopyStringtoLCD(welcomeln1, 3, 1);
-void CopyStringtoLCD(const uint8_t *FlashLoc, uint8_t x, uint8_t y)
-{
+void CopyStringtoLCD(const uint8_t *FlashLoc, uint8_t x, uint8_t y) {
     uint8_t i;
-    LCDGotoXY(x,y);
-    for(i=0;(uint8_t)pgm_read_byte(&FlashLoc[i]);i++)
-    {
-        LCDsendChar((uint8_t)pgm_read_byte(&FlashLoc[i]));
+    LCDGotoXY(x, y);
+    for (i = 0; (uint8_t) pgm_read_byte(&FlashLoc[i]); i++) {
+        LCDsendChar((uint8_t) pgm_read_byte(&FlashLoc[i]));
     }
 }
 //defines char symbol in CGRAM
@@ -351,68 +356,72 @@ const uint8_t backslash[] PROGMEM=
 };
 LCDdefinechar(backslash,0);
 */
-void LCDdefinechar(const uint8_t *pc,uint8_t char_code){
+void LCDdefinechar(const uint8_t *pc, uint8_t char_code) {
     uint8_t a, pcc;
     uint16_t i;
-    a=(char_code<<3)|0x40;
-    for (i=0; i<8; i++){
-        pcc=pgm_read_byte(&pc[i]);
+    a = (char_code << 3) | 0x40;
+    for (i = 0; i < 8; i++) {
+        pcc = pgm_read_byte(&pc[i]);
         LCDsendCommand(a++);
         LCDsendChar(pcc);
     }
 }
 
-void LCDshiftLeft(uint8_t n)	//Scrol n of characters Right
+void LCDshiftLeft(uint8_t n)    //Scrol n of characters Right
 {
-    for (uint8_t i=0;i<n;i++)
-    {
+    for (uint8_t i = 0; i < n; i++) {
         LCDsendCommand(0x1E);
     }
 }
-void LCDshiftRight(uint8_t n)	//Scrol n of characters Left
+
+void LCDshiftRight(uint8_t n)    //Scrol n of characters Left
 {
-    for (uint8_t i=0;i<n;i++)
-    {
+    for (uint8_t i = 0; i < n; i++) {
         LCDsendCommand(0x18);
     }
 }
+
 void LCDcursorOn(void) //displays LCD cursor
 {
     LCDsendCommand(0x0E);
 }
-void LCDcursorOnBlink(void)	//displays LCD blinking cursor
+
+void LCDcursorOnBlink(void)    //displays LCD blinking cursor
 {
     LCDsendCommand(0x0F);
 }
-void LCDcursorOFF(void)	//turns OFF cursor
+
+void LCDcursorOFF(void)    //turns OFF cursor
 {
     LCDsendCommand(0x0C);
 }
-void LCDblank(void)		//blanks LCD
+
+void LCDblank(void)        //blanks LCD
 {
     LCDsendCommand(0x08);
 }
-void LCDvisible(void)		//Shows LCD
+
+void LCDvisible(void)        //Shows LCD
 {
     LCDsendCommand(0x0C);
 }
-void LCDcursorLeft(uint8_t n)	//Moves cursor by n poisitions left
+
+void LCDcursorLeft(uint8_t n)    //Moves cursor by n poisitions left
 {
-    for (uint8_t i=0;i<n;i++)
-    {
+    for (uint8_t i = 0; i < n; i++) {
         LCDsendCommand(0x10);
     }
 }
-void LCDcursorRight(uint8_t n)	//Moves cursor by n poisitions left
+
+void LCDcursorRight(uint8_t n)    //Moves cursor by n poisitions left
 {
-    for (uint8_t i=0;i<n;i++)
-    {
+    for (uint8_t i = 0; i < n; i++) {
         LCDsendCommand(0x14);
     }
 }
+
 //adapted fro mAVRLIB
-void LCDprogressBar(uint8_t progress, uint8_t maxprogress, uint8_t length)
-{
+void LCDprogressBar(uint8_t progress, uint8_t maxprogress, uint8_t length) {
     uint8_t i;
     uint16_t pixelprogress;
     uint8_t c;
@@ -425,30 +434,23 @@ void LCDprogressBar(uint8_t progress, uint8_t maxprogress, uint8_t length)
 
     // total pixel length of bargraph equals length*PROGRESSPIXELS_PER_CHAR;
     // pixel length of bar itself is
-    pixelprogress = ((progress*(length*PROGRESSPIXELS_PER_CHAR))/maxprogress);
+    pixelprogress = ((progress * (length * PROGRESSPIXELS_PER_CHAR)) / maxprogress);
 
     // print exactly "length" characters
-    for(i=0; i<length; i++)
-    {
+    for (i = 0; i < length; i++) {
         // check if this is a full block, or partial or empty
         // (u16) cast is needed to avoid sign comparison warning
-        if( ((i*(uint16_t)PROGRESSPIXELS_PER_CHAR)+5) > pixelprogress )
-        {
+        if (((i * (uint16_t) PROGRESSPIXELS_PER_CHAR) + 5) > pixelprogress) {
             // this is a partial or empty block
-            if( ((i*(uint16_t)PROGRESSPIXELS_PER_CHAR)) > pixelprogress )
-            {
+            if (((i * (uint16_t) PROGRESSPIXELS_PER_CHAR)) > pixelprogress) {
                 // this is an empty block
                 // use space character?
                 c = 0;
-            }
-            else
-            {
+            } else {
                 // this is a partial block
                 c = pixelprogress % PROGRESSPIXELS_PER_CHAR;
             }
-        }
-        else
-        {
+        } else {
             // this is a full block
             c = 5;
         }

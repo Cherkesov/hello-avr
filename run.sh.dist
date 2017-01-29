@@ -2,6 +2,7 @@
 
 cd ./lcd-1602a/
 #cd ./my-led/
+make clean
 make all
 avrdude -p atmega8 -P usb -c usbasp -U flash:w:main.hex
 
