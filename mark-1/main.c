@@ -6,8 +6,8 @@
 #define FRAME_TIME 100;
 
 // engine TL - PD0;
-// engine TL - PD1;
-// engine TR - PD2;
+// engine TR - PD1;
+// engine BR - PD2;
 // engine BL - PD3;
 
 void move_reset() {
