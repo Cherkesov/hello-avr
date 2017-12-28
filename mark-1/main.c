@@ -5,21 +5,53 @@
 
 #define FRAME_TIME 100;
 
-// engine TL - PD0;
-// engine TR - PD1;
-// engine BR - PD2;
-// engine BL - PD3;
+// engine TL - ^ PD0 v PD1;
+// engine TR - ^ PD2 v PD3;
+// engine BR - ^ PD4 v PD5;
+// engine BL - ^ PD6 v PD7;
 
 void move_reset() {
-    PORTD &= ~((1 << PD0) | (1 << PD1) | (1 << PD2) | (1 << PD3));
+    PORTD = 0x00;
 }
 
 void move_forward() {
-    PORTD |= (1 << PD0) | (1 << PD1);
+    PORTD = 0x00;
+    PORTD |= (1 << PD0);
+    PORTD |= (1 << PD2);
+    PORTD |= (1 << PD4);
+    PORTD |= (1 << PD6);
 }
 
 void move_backward() {
-    PORTD |= (1 << PD2) | (1 << PD3);
+    PORTD = 0x00;
+    PORTD |= (1 << PD1);
+    PORTD |= (1 << PD3);
+    PORTD |= (1 << PD5);
+    PORTD |= (1 << PD7);
+}
+
+void rotate_left() {
+    PORTD = 0x00;
+    
+    // right side move forward
+    PORTD |= (1 << PD2);
+    PORTD |= (1 << PD4);
+    
+    // left side move backward
+    PORTD |= (1 << PD1);
+    PORTD |= (1 << PD7);
+}
+
+void rotate_right() {
+    PORTD = 0x00;
+    
+    // right side move forward
+    PORTD |= (1 << PD3);
+    PORTD |= (1 << PD5);
+    
+    // left side move backward
+    PORTD |= (1 << PD0);
+    PORTD |= (1 << PD6);
 }
 
 int main(void) {
@@ -34,25 +66,6 @@ int main(void) {
 
         move_reset();
 
-        /*if ((PINC & (1 << PINC1))) {
-            move_forward();
-        } else {
-            move_backward();
-        }*/
-
-        if (
-                ( PINC & ((1 << PINC0) | (1 << PINC1)) )
-                ) {
-            move_forward();
-        }
-
-        /*if (
-                (PINC & (1 << PINC2))
-                || (PINC & (1 << PINC3))
-                ) {
-            move_backward();
-        }*/
-
-        move_reset();
+        // TODO: just do it!!
     }
 }
