@@ -94,7 +94,7 @@ void LCDprogressBar(uint8_t progress, uint8_t maxprogress, uint8_t length);
 // Основная программа
 int main(void) {
 //    DDRC = 0xFF;
-//    PORTD = 0x00;
+    PORTD = 0x00;
     LCDinit();
 
     while (1) {
